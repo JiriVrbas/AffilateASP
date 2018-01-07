@@ -1,0 +1,179 @@
+﻿@using Models
+@model List<UserPartners>
+@{
+    ViewBag.Title = "Home Page";
+}
+@{ var user = (Session["user"] as User);}
+<header class="masthead text-center text-white d-flex">
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="text-uppercase">
+                    <strong>Hlavní popis stránek</strong>
+                </h1>
+                <hr>
+            </div>
+            <div class="col-lg-8 mx-auto">
+                <p class="text-faded mb-5">Nějaký úvodní kecy atd..</p>
+                <a class="btn btn-primary btn-xl js-scroll-trigger" href="#partners">Affilate partneři</a>
+            </div>
+        </div>
+    </div>
+</header>
+@if (TempData["error-message"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["error-message"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+<section class="bg-primary" id="partners">
+    <div class="container">
+        @{ var index = 0; }
+        @for (int i = 0; i < 3; i++)
+        {
+            <div class="row">
+                @for (int j = 0; j < 3; j++)
+                {
+                    <div class="col">
+                        <a href="@Model[index].LinkToAffilate" target="_blank">
+                            <img alt="@Model[index].Partner.Name" src="@Model[index].Partner.ImageLink"
+                                 width="350px" height="350px" runat="server" />
+                        </a>
+                    </div>
+                    index++;
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<section id="howitworks">
+    <div class="container text-center">
+        <h2 class="mb-4">Jak to funguje</h2>
+    </div>
+</section>
+
+
+<section class="bg-dark text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Nějaká patička??</h2>
+        <a class="btn btn-light btn-xl sr-button" href="http://startbootstrap.com/template-overviews/creative/">
+            Download Now!
+        </a>
+    </div>
+</section>
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Přihlášení</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-control" }))
+                {
+                    <input class="form-control" type="text" name="login" placeholder="Email">
+                    <input class="form-control" type="password" name="password" placeholder="Heslo">
+                    <button class="btn btn-primary btn-sm" type="submit" name="submit">Přihlásit</button>
+                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                    </fb:login-button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registrace</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("SignUp", "Account", FormMethod.Post, new { @class = "form-control" }))
+                {
+                    <input type="text" class="form-control" name="email" placeholder="E-mail">
+                    <input type="password" name="pwd" class="form-control" placeholder="Heslo" id="pwd"
+                           onchange="ValidatePassword()">
+                    <input type="password" class="form-control" placeholder="Heslo znovu" id="repeatPwd"
+                           onchange="ValidatePassword()">
+                    <button class="btn btn-primary btn-sm" type="submit" name="submit"
+                            id="signUp">
+                        Registrovat
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Usermanagement Modal -->
+<div class="modal fade" id="userManagementModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Správa uživatele</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @if (user != null)
+            {
+                if (user.IsConfirmed)
+                {
+                    <div class="modal-body">
+                        <div class="container text-center">
+                            <h2 class="mb-4">Přihlášen jako uživatel @user.Email</h2>
+                            <p class="mb-4"><b>Odkaz pro vaše příspěvky:</b>@user.Link</p>
+                            <p class="mb-4"><b>Vaše provize:</b>@user.Balance</p>
+                        </div>
+                        <div class="container text-center">
+                            <div class="mb-4">
+                                <div class="span4 collapse-group">
+                                    <a class="btn" data-toggle="collapse" data-target="#viewaccounts">Žádost o výběr</a>
+                                    <div class="collapse" id="viewaccounts">
+                                        @using (Html.BeginForm("Withdraw", "UserManagement", FormMethod.Post, new { @class = "form-control" }))
+                                        {
+                                            <input type="text" class="form-control" name="cisloUctu" placeholder="Číslo účtu">
+                                            <input type="text" name="kodBanky" class="form-control" placeholder="Kód banky">
+                                            <input type="number" name="castka" class="form-control" placeholder="Částka">
+
+                                            <button class="btn btn-primary btn-sm" type="submit" name="submit">Podat žádost</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="modal-body">
+                        <div class="container text-center">
+                            <h2 class="mb-4">Váš email není ověřen</h2>
+                            <p class="mb-4">Zkontrolujte váš email a účet ověřte</p>
+                            <p class="mb-4">Něco pro případ zaslání potvrzovacího emailu znovu</p>
+                        </div>
+                    </div>
+                }
+            }
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="contact">
+    <div class="container text-center">
+        <h2 class="mb-4">Kontakt-nějaký formulář k odeslání dotazu</h2>
+    </div>
+</section>
